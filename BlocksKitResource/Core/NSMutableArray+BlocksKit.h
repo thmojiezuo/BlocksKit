@@ -11,22 +11,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface __GENERICS(NSMutableArray, ObjectType) (BlocksKit)
 
-/** Filters a mutable array to the objects matching the block.
-
- @param block A single-argument, BOOL-returning code block.
- @see <NSArray(BlocksKit)>bk_reject:
+/**
+     删除容器中!!!不符合block条件的对象，即只保留符合block条件的对象
  */
 - (void)bk_performSelect:(BOOL (^)(id ObjectType))block;
 
-/** Filters a mutable array to all objects but the ones matching the block,
- the logical inverse to bk_select:.
-
- @param block A single-argument, BOOL-returning code block.
- @see <NSArray(BlocksKit)>bk_select:
+/**
+     删除容器中符合block条件的对象
  */
 - (void)bk_performReject:(BOOL (^)(id ObjectType))block;
 
-/** Transform the objects in the array to the results of the block.
+/** 容器中的对象变换为自己的block映射对象
 
  This is sometimes referred to as a transform, mutating one of each object:
 	[foo bk_performMap:^id(id obj) {

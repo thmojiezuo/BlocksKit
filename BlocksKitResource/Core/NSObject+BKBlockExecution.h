@@ -13,28 +13,18 @@ typedef __nonnull id <NSObject, NSCopying> BKCancellationToken;
 
 @interface NSObject (BKBlockExecution)
 
-/** Executes a block after a given delay on the reciever.
-
- @warning *Important:* Use of the **self** reference in a block is discouraged.
- The block argument @c obj should be used instead.
-
- @param delay A measure in seconds.
- @param block A single-argument code block, where @c obj is the reciever.
- @return An opaque, temporary token that may be used to cancel execution.
+/**
+     主线程执行block方法，延迟时间可选
  */
 - (BKCancellationToken)bk_performAfterDelay:(NSTimeInterval)delay usingBlock:(void (^)(id obj))block;
 
-/** Executes a block after a given delay.
- 
- @see bk_performAfterDelay:usingBlock:
- @param delay A measure in seconds.
- @param block A code block.
- @return An opaque, temporary token that may be used to cancel execution.
+/**
+     主线程执行block方法，延迟时间可选
  */
 + (BKCancellationToken)bk_performAfterDelay:(NSTimeInterval)delay usingBlock:(void (^)(void))block;
 
 
-/** Executes a block in the background after a given delay on the receiver.
+/** 后台线程执行block方法，延迟时间可选
  
  This method is functionally identical to @c -bk_performAfterDelay:usingBlock:
  except the block will be performed on a background queue.
@@ -49,7 +39,7 @@ typedef __nonnull id <NSObject, NSCopying> BKCancellationToken;
  */
 - (BKCancellationToken)bk_performInBackgroundAfterDelay:(NSTimeInterval)delay usingBlock:(void (^)(id obj))block;
 
-/** Executes a block in the background after a given delay.
+/** 后台线程执行block方法，延迟时间可选
  
  This method is functionally identical to @c +bk_performAfterDelay:usingBlock:
  except the block will be performed on a background queue.
@@ -61,7 +51,7 @@ typedef __nonnull id <NSObject, NSCopying> BKCancellationToken;
  */
 + (BKCancellationToken)bk_performInBackgroundAfterDelay:(NSTimeInterval)delay usingBlock:(void (^)(void))block;
 
-/** Executes a block in the background after a given delay.
+/** 所有执行block相关的方法都是此方法的简化版，该函数在指定的block队列上以指定的时间延迟执行block
  
  This method is functionally identical to @c -bk_performAfterDelay:usingBlock:
  except the block will be performed on a background queue.
@@ -77,7 +67,7 @@ typedef __nonnull id <NSObject, NSCopying> BKCancellationToken;
  */
 - (BKCancellationToken)bk_performOnQueue:(dispatch_queue_t)queue afterDelay:(NSTimeInterval)delay usingBlock:(void (^)(id obj))block;
 
-/** Executes a block in the background after a given delay.
+/** 所有执行block相关的方法都是此方法的简化版，该函数在指定的block队列上以指定的时间延迟执行block
  
  This method is functionally identical to @c +bk_performAfterDelay:usingBlock:
  except the block will be performed on a background queue.
@@ -90,7 +80,7 @@ typedef __nonnull id <NSObject, NSCopying> BKCancellationToken;
  */
 + (BKCancellationToken)bk_performOnQueue:(dispatch_queue_t)queue afterDelay:(NSTimeInterval)delay usingBlock:(void (^)(void))block;
 
-/** Cancels the potential execution of a block.
+/** 取消block，非常牛逼！！！一般来说一个block加到block queue上是没法取消的，此方法实现了block的取消操作（必须是用BlocksKit投放的block）
  
  @warning *Important:* It is not recommended to cancel a block executed
  with a delay of @c 0.

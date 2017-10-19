@@ -21,9 +21,10 @@ typedef NS_ENUM(int, BKObserverContext) {
 @interface _BKObserver : NSObject {
 	BOOL _isObserving;
 }
-
+//存储“被观察的对象”
 @property (nonatomic, readonly, unsafe_unretained) id observee;
 @property (nonatomic, readonly) NSMutableArray *keyPaths;
+//存储回调block
 @property (nonatomic, readonly) id task;
 @property (nonatomic, readonly) BKObserverContext context;
 
@@ -49,6 +50,7 @@ static void *BKBlockObservationContext = &BKBlockObservationContext;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
+     //观察者回调，在KV改变的时候调用相关block
 	if (context != BKBlockObservationContext) return;
 
 	@synchronized(self) {
@@ -76,20 +78,21 @@ static void *BKBlockObservationContext = &BKBlockObservationContext;
 		}
 	}
 }
-
+//开启KV观察
 - (void)startObservingWithOptions:(NSKeyValueObservingOptions)options
 {
 	@synchronized(self) {
 		if (_isObserving) return;
 
 		[self.keyPaths bk_each:^(NSString *keyPath) {
+            //observee的被观察对象，observer是自己，
 			[self.observee addObserver:self forKeyPath:keyPath options:options context:BKBlockObservationContext];
 		}];
 
 		_isObserving = YES;
 	}
 }
-
+//停止KV观察
 - (void)stopObservingKeyPath:(NSString *)keyPath
 {
 	NSParameterAssert(keyPath);

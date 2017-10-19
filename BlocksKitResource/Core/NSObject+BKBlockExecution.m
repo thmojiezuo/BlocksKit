@@ -37,20 +37,24 @@ static id <NSObject, NSCopying> BKDispatchCancellableBlock(dispatch_queue_t queu
         return ret;
     }
 #endif
-    
+    //cancelled是个__block变量，使得该block在加入queue后能够逻辑上取消。注意，仅仅是逻辑上取消，不能把block从queue中剔除。
     __block BOOL cancelled = NO;
+    //在外部block之上加一层能够逻辑取消的代码，使其变为一个wrapper block
+    //当调用wrapper(YES)的时候就让__block BOOL cancelled = YES,使得以后每次block主体都被跳过。
     void (^wrapper)(BOOL) = ^(BOOL cancel) {
+        //cancel参数是为了在外部能够控制cancelled _block变量
         if (cancel) {
             cancelled = YES;
             return;
         }
         if (!cancelled) block();
     };
-    
+    //每个投入queue中的block实际上是wraper版的block
     dispatch_after(time, queue, ^{
+        //把cancel设置为NO,block能够逻辑执行
         wrapper(NO);
     });
-    
+    //返回wraper block，以便bk_cancelBlock的时候使用
     return wrapper;
 }
 
@@ -102,7 +106,7 @@ static id <NSObject, NSCopying> BKDispatchCancellableBlock(dispatch_queue_t queu
         return;
     }
 #endif
-    
+    //把cancel设置为YES,修改block中_block cancelled变量，如果此时block未执行则，block在执行的时候其逻辑主体会被跳过
     void (^wrapper)(BOOL) = (void(^)(BOOL))block;
     wrapper(YES);
 }

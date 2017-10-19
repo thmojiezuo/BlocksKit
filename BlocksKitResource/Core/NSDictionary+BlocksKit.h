@@ -11,39 +11,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface __GENERICS(NSDictionary, KeyType, ObjectType) (BlocksKit)
 
-/** Loops through the dictionary and executes the given block using each item.
-
- @param block A block that performs an action using a key/value pair.
+/**
+     串行遍历容器中所有元素
  */
 - (void)bk_each:(void (^)(KeyType key, ObjectType obj))block;
 
-/** Enumerates through the dictionary concurrently and executes
- the given block once for each pair.
-
- Enumeration will occur on appropriate background queues;
- the system will spawn threads as need for execution. This
- will have a noticeable speed increase, especially on dual-core
- devices, but you *must* be aware of the thread safety of the
- objects you message from within the block.
-
- @param block A block that performs an action using a key/value pair.
+/**
+ 并发遍历容器中所有元素（不要求容器中元素顺次遍历的时候可以使用此种遍历方式来提高遍历速度）
  */
 - (void)bk_apply:(void (^)(KeyType key, ObjectType obj))block;
 
-/** Loops through a dictionary to find the first key/value pair matching the block.
-
- bk_match: is functionally identical to bk_select:, but will stop and return
- the value on the first match.
-
- @param block A BOOL-returning code block for a key/value pair.
- @return The value of the first pair found;
+/**
+     返回第一个符合block条件（让block返回YES）的对象
  */
 - (nullable id)bk_match:(BOOL (^)(KeyType key, ObjectType obj))block;
 
-/** Loops through a dictionary to find the key/value pairs matching the block.
-
- @param block A BOOL-returning code block for a key/value pair.
- @return Returns a dictionary of the objects found.
+/**
+ 返回所有符合block条件（让block返回YES）的对象
  */
 - (NSDictionary *)bk_select:(BOOL (^)(KeyType key, ObjectType obj))block;
 
